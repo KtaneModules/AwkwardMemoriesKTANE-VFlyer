@@ -11,19 +11,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: macroMemory
-  title: Macro Memory
-  author: Speakingevil
-  description: 'Macro Memory ver 1.0
+  id: memoryVariantsVFlyer
+  title: Awkward Memories
+  author: VFlyer
+  description: '[i]I don''t seem to remember much of what I want anymore. It just
+    keeps haunting me, no matter where I go.[/i]
 
-    Memory is... uh... mem- memory is fra.. fragrant? No, fragile. Memory is fragile
-    and... where was I again? Oh yes, always pay attention.
+    A collection of 1 module by VFlyer, with more to come.
 
-    Five stages of pressing a number, but the answer depends on previously pressed
-    numbers and the positions those numbers where in. Multiple Macro Memory modules
-    combine into a bigger puzzle.
 
-    Created by Speakingevil'
+    Collection contains the following:
+
+    Encrypted Memory, Memory but decrypt the displayed text to determine the original
+    instruction. There is only one instruction but a baseline of what is to come.
+
+
+    Macro Memory Prefab by Speakingevil
+
+'
   version: 1.0
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 6360d8fb7fd874b4d875d91fb54de688, type: 3}
