@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EncryptedMemoryScript : MonoBehaviour {
 	public KMBombModule modSelf;
@@ -31,6 +34,10 @@ public class EncryptedMemoryScript : MonoBehaviour {
     {
 		Debug.LogFormat("[{0} #{1}] {2}", modSelf.ModuleDisplayName, moduleID, string.Format(toLog, args));
     }
+	void QuickLogDebug(string toLog, params object[] args)
+    {
+		Debug.LogFormat("<{0} #{1}> {2}", modSelf.ModuleDisplayName, moduleID, string.Format(toLog, args));
+    }
 
 	void Start () {
 		storedInitialPos = buttonsSelectable.Select(a => a.transform.localPosition).ToArray();
@@ -51,6 +58,7 @@ public class EncryptedMemoryScript : MonoBehaviour {
 			progressRenderers[x].material = matsStatus[0];
 		moduleID = ++modIDCnt;
 		modSelf.OnActivate += () => { HandleStageGen(true); StartCoroutine(DisplayStage()); };
+		//QuickLog("\"Wait, this is a manual challenge? I thought the answers were there.\" - You, probably.");
 	}
 	void HandleIdxPress(int idx)
     {
@@ -103,10 +111,10 @@ public class EncryptedMemoryScript : MonoBehaviour {
 		var strOutput = "";
         var allowedIdxFormatsAllStages = new[] {
 			new[] { 0 },
-			new[] { 0, 1 },
-			new[] { 0, 1, 2, 3 },
-			new[] { 0, 1, 2, 3 },
-			new[] { 1, 2, 3 } };
+			new[] { 0, 0, 1 },
+			new[] { 0, 1, 1, 2, 3 },
+			new[] { 0, 1, 1, 2, 2, 3, 3 },
+			new[] { 1, 2, 2, 3, 3 } };
 
 		
 		var pickedStrFormat = allowedStrFormat[allowedIdxFormatsAllStages[stagesCompleted].PickRandom()];
@@ -128,50 +136,20 @@ public class EncryptedMemoryScript : MonoBehaviour {
 				stageDetected = false;
 			}
 		}
-		newMemStage.displayStored = strOutput;
 		storedMemoryStages.Add(newMemStage);
 		var typeProcess = new List<MemoryInfo>();
 		var processedDigits = new List<int>();
 		var targetStageIdx = stagesCompleted;
-		foreach (char processChr in newMemStage.displayStored)
+		foreach (char processChr in strOutput)
         {
 			var targetStage = storedMemoryStages[targetStageIdx];
 			if (digits.Contains(processChr))
             {
 				var idxDigit = digits.IndexOf(processChr);
 				processedDigits.Insert(0, idxDigit);
-				/*var lastItemProcess = typeProcess[pointer];
-				switch (lastItemProcess)
-                {
-					case MemoryInfo.Label:
-						targetValue = Enumerable.Range(0, 4).Single(a => targetStage.storedLabels[a] == idxDigit);
-						break;
-					case MemoryInfo.Position:
-						targetValue = idxDigit;
-						break;
-					case MemoryInfo.Stage:
-						targetStageIdx = idxDigit;
-						break;
-                }
-				pointer++;*/
             }
 			else switch(processChr)
                 {
-					/*case 'C':
-                        {
-							var lastItemProcess = typeProcess[pointer];
-							switch (lastItemProcess)
-							{
-								case MemoryInfo.Label:
-									targetValue = targetStage.storedLabels[targetStage.expectedIdxPos];
-									break;
-								case MemoryInfo.Position:
-									targetValue = targetStage.expectedIdxPos;
-									break;
-							}
-							pointer++;
-						}
-						break;*/
 					case 'S':
 						typeProcess.Insert(0, MemoryInfo.Stage);
 						break;
@@ -231,33 +209,34 @@ public class EncryptedMemoryScript : MonoBehaviour {
 			newMemStage.expectedIdxPos = Enumerable.Range(0, 4).Single(a => newMemStage.storedLabels[a] == targetLabel);
 		// Encrypt the freaking display.
 		var alteredDisplay = strOutput.Select(a => digits.Contains(a) ? digits[digits.IndexOf(a) + 1] : a).Join("");
-		var pickedOffset = Random.value < 0.5f ? 5 : 10;
+		var pickedOffsetLetters = Random.value < 0.5f ? 5 : 10;
+		var pickedOffsetDigits = Random.value < 0.5f ? 5 : 10;
 		switch (stagesCompleted)
         {
 			default:
 				break;
 			case 1:
-				alteredDisplay = alteredDisplay.Select(a => digits.Contains(a) ? digits[(digits.IndexOf(a) + pickedOffset) % digits.Length] : a).Join("");
+				alteredDisplay = alteredDisplay.Select(a => digits.Contains(a) ? digits[(digits.IndexOf(a) + pickedOffsetDigits) % digits.Length] : a).Join("");
 				break;
 			case 2:
-				alteredDisplay = alteredDisplay.Select(a => alphabet.Contains(a) ? alphabet[(alphabet.IndexOf(a) + pickedOffset) % alphabet.Length] : a).Join("");
+				alteredDisplay = alteredDisplay.Select(a => alphabet.Contains(a) ? alphabet[(alphabet.IndexOf(a) + pickedOffsetLetters) % alphabet.Length] : a).Join("");
 				break;
 			case 3:
-				alteredDisplay = alteredDisplay.Select(a => digits.Contains(a) ? digits[(digits.IndexOf(a) + pickedOffset) % digits.Length] : alphabet.Contains(a) ? alphabet[(alphabet.IndexOf(a) + pickedOffset) % alphabet.Length] : a).Join("");
+				alteredDisplay = alteredDisplay.Select(a => digits.Contains(a) ? digits[(digits.IndexOf(a) + pickedOffsetDigits) % digits.Length] : alphabet.Contains(a) ? alphabet[(alphabet.IndexOf(a) + pickedOffsetLetters) % alphabet.Length] : a).Join("");
 				break;
 			case 4:
-				alteredDisplay = alteredDisplay.Select(a => base36Digits.Contains(a) ? base36Digits[(base36Digits.IndexOf(a) + pickedOffset) % base36Digits.Length] : a).Join("");
+				alteredDisplay = alteredDisplay.Select(a => base36Digits.Contains(a) ? base36Digits[(base36Digits.IndexOf(a) + pickedOffsetLetters) % base36Digits.Length] : a).Join("");
 				break;
 
 		}
 		newMemStage.displayStored = alteredDisplay;
 
-		QuickLog("Stage {0}:", stagesCompleted + 1);
-		QuickLog("Labels from left to right: {0}", newMemStage.storedLabels.Select(a => a + 1).Join(", "));
-		QuickLog("Display: {0}", newMemStage.displayStored);
-		if (stagesCompleted > 0)
-			QuickLog("Unencrypted Display: {0}", strOutput.Select(a => digits.Contains(a) ? digits[digits.IndexOf(a) + 1] : a).Join(""));
-		QuickLog("The module expects the following to be pressed: Position {0}, Label {1}", newMemStage.expectedIdxPos + 1, newMemStage.storedLabels[newMemStage.expectedIdxPos] + 1);
+        QuickLog("Stage {0}:", stagesCompleted + 1);
+        QuickLog("Labels from left to right: {0}", newMemStage.storedLabels.Select(a => a + 1).Join(", "));
+        QuickLog("Display: {0}", newMemStage.displayStored);
+        if (stagesCompleted > 0)
+            QuickLog("Unencrypted Display: {0}", strOutput.Select(a => digits.Contains(a) ? digits[digits.IndexOf(a) + 1] : a).Join(""));
+        QuickLog("The module expects the following to be pressed: Position {0}, Label {1}", newMemStage.expectedIdxPos + 1, newMemStage.storedLabels[newMemStage.expectedIdxPos] + 1);
     }
 	IEnumerator ButtonAdjust(int idx, bool hide = false)
     {
@@ -341,4 +320,48 @@ public class EncryptedMemoryScript : MonoBehaviour {
             }
         }
 	}
+#pragma warning disable 414
+	private readonly string TwitchHelpMessage = "\"!{0} P #\" [Presses the button at position # from left to right, 1 being left-most] | \"!{0} L #\" [Presses the button with the label #]";
+#pragma warning restore 414
+	IEnumerator ProcessTwitchCommand(string cmd)
+    {
+		if (!interactable)
+        {
+			yield return "sendtochaterror!h The module is refusing inputs at the moment.";
+			yield break;
+        }
+		var rgxMatchPos = Regex.Match(cmd, @"^p\s[0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		var rgxMatchLabel = Regex.Match(cmd, @"^l\s[0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		if (rgxMatchPos.Success)
+        {
+			var idxDigit = "1234".IndexOf(rgxMatchPos.Value.Split().Last());
+			if (idxDigit == -1)
+				yield break;
+			yield return null;
+			buttonsSelectable[idxDigit].OnInteract();
+        }
+		else if (rgxMatchLabel.Success)
+		{
+			var idxDigit = "1234".IndexOf(rgxMatchLabel.Value.Split().Last());
+			if (idxDigit == -1)
+				yield break;
+			yield return null;
+			var curStage = storedMemoryStages[stagesCompleted];
+			buttonsSelectable[Array.IndexOf(curStage.storedLabels, idxDigit)].OnInteract();
+		}
+		yield break;
+	}
+
+
+	IEnumerator TwitchHandleForcedSolve()
+    {
+		while (stagesCompleted < 5)
+		{
+			while (!interactable)
+				yield return true;
+			var curStage = storedMemoryStages[stagesCompleted];
+			buttonsSelectable[curStage.expectedIdxPos].OnInteract();
+			yield return new WaitForSeconds(0.1f);
+		}
+    }
 }

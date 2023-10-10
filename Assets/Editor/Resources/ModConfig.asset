@@ -14,21 +14,18 @@ MonoBehaviour:
   id: memoryVariantsVFlyer
   title: Awkward Memories
   author: VFlyer
-  description: '[i]I don''t seem to remember much of what I want anymore. It just
-    keeps haunting me, no matter where I go.[/i]
+  description: '[i]What do you mean the instructions are right there!? I can not read
+    that![/i]
 
-    A collection of 1 module by VFlyer, with more to come.
+    Suitable as a manual challenge if the user insists to tackle this. Expect it to
+    be not too difficult.
 
 
-    Collection contains the following:
-
-    Encrypted Memory, Memory but decrypt the displayed text to determine the original
-    instruction. There is only one instruction but a baseline of what is to come.
-
+    Module by VFlyer
 
     Macro Memory Prefab by Speakingevil
 
 '
-  version: 1.0
+  version: 1.0.01
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: 6360d8fb7fd874b4d875d91fb54de688, type: 3}
+  previewImage: {fileID: 2800000, guid: bddcaf8ed1a0cca4c9c29e03aaf90975, type: 3}

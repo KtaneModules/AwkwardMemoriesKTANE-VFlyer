@@ -513,8 +513,11 @@ public class TestHarness : MonoBehaviour
 		NeedyModules = FindObjectsOfType<KMNeedyModule>().ToList();
 		var allModules = Modules.ToArray().Concat<Component>(NeedyModules.ToArray());
 		foreach (Component moduleComponent in allModules)
-			Handlers(moduleComponent.GetComponent<KMBombInfo>());
-
+		{
+			var infoComp = moduleComponent.GetComponent<KMBombInfo>();
+			if (infoComp != null)
+				Handlers(infoComp);
+		}
         ReplaceBombInfo();
         AddHighlightables();
         AddSelectables();
