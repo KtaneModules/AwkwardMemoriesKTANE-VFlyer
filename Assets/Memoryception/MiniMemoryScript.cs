@@ -7,7 +7,7 @@ public class MiniMemoryScript : MonoBehaviour {
 	public KMSelectable[] btnSelectables;
 	public TextMesh displayMesh;
 	public TextMesh[] btnLabels;
-	public StatusLight fakeStatusLight;
+	public FakeStatusLight fakeStatusLight;
 	public List<int[]> storedIdxLabels = new List<int[]>();
 	public List<int> storedIdxExpected = new List<int>();
 	public int stagesCompleted = 0;
