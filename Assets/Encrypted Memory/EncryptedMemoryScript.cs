@@ -70,7 +70,7 @@ public class EncryptedMemoryScript : MonoBehaviour {
 		var inputCorrect = refStage == null || refStage.expectedIdxPos == idx;
 		if (inputCorrect)
         {
-			QuickLog("Correctly pressed Position {0}, Label {1}.", idx, refStage.storedLabels[idx]);
+			QuickLog("Correctly pressed Position {0}, Label {1}.", idx + 1, refStage.storedLabels[idx] + 1);
 			stagesCompleted++;
 			if (stagesCompleted >= 5)
 			{
@@ -82,7 +82,7 @@ public class EncryptedMemoryScript : MonoBehaviour {
         }
 		else
         {
-			QuickLog("Incorrectly pressed Position {0}, Label {1}. Resetting.", idx, refStage.storedLabels[idx]);
+			QuickLog("Incorrectly pressed Position {0}, Label {1}. Resetting.", idx + 1, refStage.storedLabels[idx] + 1);
 			modSelf.HandleStrike();
 		}
 		HandleStageGen(!inputCorrect);
@@ -161,8 +161,8 @@ public class EncryptedMemoryScript : MonoBehaviour {
 						break;
                 }
         }
-		Debug.Log(typeProcess.Join());
-		Debug.Log(processedDigits.Join());
+		//Debug.Log(typeProcess.Join());
+		//Debug.Log(processedDigits.Join());
 		var targetIdxPos = -1;
 		var targetLabel = -1;
 		for (var x = 0; x < typeProcess.Count; x++)
@@ -321,7 +321,7 @@ public class EncryptedMemoryScript : MonoBehaviour {
         }
 	}
 #pragma warning disable 414
-	private readonly string TwitchHelpMessage = "\"!{0} P #\" [Presses the button at position # from left to right, 1 being left-most] | \"!{0} L #\" [Presses the button with the label #]";
+	private readonly string TwitchHelpMessage = "\"!{0} P #\" or \"!{0} pos #\" or \"!{0} position #\" [Presses the button at position # from left to right, 1 being left-most] | \"!{0} L #\" or \"!{0} label #\" [Presses the button with the label #]";
 #pragma warning restore 414
 	IEnumerator ProcessTwitchCommand(string cmd)
     {
@@ -330,8 +330,8 @@ public class EncryptedMemoryScript : MonoBehaviour {
 			yield return "sendtochaterror!h The module is refusing inputs at the moment.";
 			yield break;
         }
-		var rgxMatchPos = Regex.Match(cmd, @"^p\s[0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-		var rgxMatchLabel = Regex.Match(cmd, @"^l\s[0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		var rgxMatchPos = Regex.Match(cmd, @"^p(os(ition)?)?\s[0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		var rgxMatchLabel = Regex.Match(cmd, @"^l(abel)?\s[0-9]$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 		if (rgxMatchPos.Success)
         {
 			var idxDigit = "1234".IndexOf(rgxMatchPos.Value.Split().Last());

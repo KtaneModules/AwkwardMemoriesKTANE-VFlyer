@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: ModConfig
   m_EditorClassIdentifier: 
   id: memoryVariantsVFlyer
-  title: Awkward Memories
+  title: Encrypted Memory
   author: VFlyer
   description: '[i]What do you mean the instructions are right there!? I can not read
     that![/i]
@@ -26,6 +26,6 @@ MonoBehaviour:
     Macro Memory Prefab by Speakingevil
 
 '
-  version: 1.0.01
+  version: 1.0.02
   outputFolder: build
   previewImage: {fileID: 2800000, guid: bddcaf8ed1a0cca4c9c29e03aaf90975, type: 3}
